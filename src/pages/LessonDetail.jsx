@@ -1,285 +1,199 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Clock, BookOpen, Target, Play, CheckCircle, Volume2 } from 'lucide-react';
 import { lessons } from '../data/lessons';
 import { useUser } from '../context/UserContext';
+import { Book, CheckCircle, Target, ArrowRight, List, Lightbulb, Mic, FileText } from 'lucide-react';
+import Skeleton from '../components/skeletons/Skeleton';
+import { useLoading } from '../hooks/useLoading';
 
 const LessonDetail = () => {
-  const { id } = useParams();
+  const { lessonId } = useParams();
   const navigate = useNavigate();
-  const { completeLesson } = useUser();
+  const { user } = useUser();
   const [lesson, setLesson] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview');
+  const loading = useLoading(700, [lessonId]);
 
   useEffect(() => {
-    const foundLesson = lessons.find(l => l.id === parseInt(id));
+    const foundLesson = lessons.find(l => l.id === parseInt(lessonId));
     setLesson(foundLesson);
-  }, [id]);
+  }, [lessonId]);
 
   if (!lesson) {
     return (
-      <div className="flex items-center justify-center min-h-64">
+      <div className="text-center py-16">
+        <h2 className="text-2xl font-bold text-gray-800">Lesson not found</h2>
+        <p className="text-gray-600 mt-2">Sorry, we couldn't find the lesson you're looking for.</p>
+        <Link to="/lessons" className="btn-primary mt-6">
+          Back to Lessons
+        </Link>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        {/* Header Skeleton */}
+        <div className="card p-8 mb-8">
+          <div className="flex justify-between items-start">
+            <div className="w-2/3">
+              <Skeleton className="h-5 w-1/4 mb-4" />
+              <Skeleton className="h-10 w-full mb-2" />
+              <Skeleton className="h-6 w-3/4" />
+            </div>
+          </div>
+          <div className="mt-6 pt-6 border-t border-gray-200 grid grid-cols-3 gap-4 text-center">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
+
+        {/* Content Skeleton */}
+        <div className="card p-8 mb-8">
+          <div className="mb-8">
+            <Skeleton className="h-8 w-1/3 mb-4" />
+            <Skeleton className="h-5 w-full mb-2" />
+            <Skeleton className="h-5 w-5/6 mb-2" />
+            <Skeleton className="h-5 w-3/4" />
+          </div>
+          <div className="border-t border-gray-200 pt-8">
+            <Skeleton className="h-8 w-1/3 mb-4" />
+            <Skeleton className="h-20 w-full mb-4" />
+            <Skeleton className="h-20 w-full" />
+          </div>
+        </div>
+
+        {/* Button Skeleton */}
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading lesson...</p>
+          <Skeleton className="h-12 w-48 mx-auto" />
         </div>
       </div>
     );
   }
 
-  const tabs = [
-    { id: 'overview', name: 'Overview', icon: BookOpen },
-    { id: 'content', name: 'Content', icon: Target },
-    { id: 'practice', name: 'Practice', icon: Play }
-  ];
+  const isCompleted = user.completedLessonIds.includes(lesson.id);
 
-  const handleStartQuiz = () => {
-    navigate(`/quiz/${lesson.id}`);
-  };
-
-  const playPronunciation = (word) => {
-    // In a real app, this would use Web Speech API or audio files
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(word);
-      utterance.rate = 0.8;
-      speechSynthesis.speak(utterance);
-    }
+  const renderContent = () => {
+    const { content } = lesson;
+    return (
+      <>
+        {content.rules && (
+          <div className="mb-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-3 flex items-center"><List className="mr-2 h-5 w-5 text-primary-600" /> Grammar Rules</h3>
+            <ul className="list-disc list-inside space-y-2 text-gray-700">
+              {content.rules.map((rule, index) => <li key={index}>{rule}</li>)}
+            </ul>
+          </div>
+        )}
+        {content.examples && (
+          <div className="mb-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-3 flex items-center"><Lightbulb className="mr-2 h-5 w-5 text-yellow-500" /> Examples</h3>
+            {content.examples.map((example, index) => (
+              <div key={index} className="bg-gray-100 p-4 rounded-lg mb-2">
+                <p><strong>Positive:</strong> {example.positive}</p>
+                <p><strong>Negative:</strong> {example.negative}</p>
+                <p><strong>Question:</strong> {example.question}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        {content.vocabulary && (
+          <div className="mb-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-3 flex items-center"><FileText className="mr-2 h-5 w-5 text-green-600" /> Vocabulary</h3>
+            <div className="space-y-3">
+              {content.vocabulary.map((item, index) => (
+                <div key={index} className="bg-gray-100 p-4 rounded-lg">
+                  <p className="font-bold text-gray-900">{item.word} <span className="font-normal text-gray-600">{item.pronunciation}</span></p>
+                  <p className="text-gray-700">{item.meaning}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {content.dialogues && (
+           <div className="mb-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-3 flex items-center"><Mic className="mr-2 h-5 w-5 text-red-500" /> Dialogue</h3>
+            <div className="bg-gray-100 p-4 rounded-lg space-y-2">
+              {content.dialogues[0].conversation.map((line, index) => (
+                <p key={index}><strong>{line.speaker}:</strong> {line.text}</p>
+              ))}
+            </div>
+          </div>
+        )}
+      </>
+    );
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <motion.div 
+    <div className="max-w-4xl mx-auto">
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center space-x-4"
       >
-        <Link 
-          to="/lessons" 
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <ArrowLeft className="h-6 w-6 text-gray-600" />
-        </Link>
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">{lesson.title}</h1>
-          <div className="flex items-center space-x-4 mt-2 text-gray-600">
-            <span className="flex items-center space-x-1">
-              <Clock className="h-4 w-4" />
-              <span>{lesson.duration}</span>
-            </span>
-            <span className="px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm font-medium">
-              {lesson.level}
-            </span>
-            <span className="px-3 py-1 bg-secondary-100 text-secondary-800 rounded-full text-sm font-medium">
-              {lesson.category}
-            </span>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Progress Indicator */}
-      {lesson.completed && (
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="card p-4 bg-green-50 border-green-200"
-        >
-          <div className="flex items-center space-x-3">
-            <CheckCircle className="h-6 w-6 text-green-600" />
+        {/* Header */}
+        <div className="card p-8 mb-8">
+          <div className="flex justify-between items-start">
             <div>
-              <p className="font-medium text-green-900">Lesson Completed!</p>
-              <p className="text-sm text-green-700">Your score: {lesson.score}%</p>
+              <span className={`px-3 py-1 text-xs font-semibold rounded-full mb-4 inline-block ${
+                lesson.category === 'Grammar' ? 'bg-blue-100 text-blue-800' :
+                lesson.category === 'Vocabulary' ? 'bg-green-100 text-green-800' :
+                lesson.category === 'Reading' ? 'bg-red-100 text-red-800' :
+                'bg-purple-100 text-purple-800'
+              }`}>
+                {lesson.category}
+              </span>
+              <h1 className="text-4xl font-bold text-gray-900">{lesson.title}</h1>
+              <p className="text-lg text-gray-600 mt-2">{lesson.description}</p>
+            </div>
+            {isCompleted && (
+              <div className="flex-shrink-0 ml-6 flex items-center space-x-2 bg-green-100 text-green-700 px-4 py-2 rounded-full">
+                <CheckCircle className="h-5 w-5" />
+                <span className="font-medium">Completed</span>
+              </div>
+            )}
+          </div>
+          <div className="mt-6 pt-6 border-t border-gray-200 grid grid-cols-3 gap-4 text-center">
+            <div>
+              <p className="text-sm text-gray-500">Level</p>
+              <p className="font-semibold text-gray-800">{lesson.level}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Duration</p>
+              <p className="font-semibold text-gray-800">{lesson.duration}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Category</p>
+              <p className="font-semibold text-gray-800">{lesson.category}</p>
             </div>
           </div>
-        </motion.div>
-      )}
-
-      {/* Tabs */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="card p-6"
-      >
-        <div className="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-all duration-200 ${
-                  activeTab === tab.id
-                    ? 'bg-white text-primary-600 shadow-sm font-medium'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                <span>{tab.name}</span>
-              </button>
-            );
-          })}
         </div>
 
-        {/* Tab Content */}
-        <div className="min-h-96">
-          {activeTab === 'overview' && (
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="space-y-6"
-            >
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Description</h3>
-                <p className="text-gray-600 leading-relaxed">{lesson.description}</p>
-              </div>
+        {/* Lesson Content */}
+        <div className="card p-8 mb-8">
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center"><Target className="mr-3 h-6 w-6 text-secondary-600" /> Learning Objectives</h2>
+            <ul className="list-disc list-inside space-y-2 text-gray-700">
+              {lesson.objectives.map((obj, index) => <li key={index}>{obj}</li>)}
+            </ul>
+          </div>
 
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Learning Objectives</h3>
-                <ul className="space-y-2">
-                  {lesson.objectives.map((objective, index) => (
-                    <li key={index} className="flex items-start space-x-3">
-                      <div className="bg-primary-100 p-1 rounded-full mt-1">
-                        <Target className="h-3 w-3 text-primary-600" />
-                      </div>
-                      <span className="text-gray-700">{objective}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          <div className="border-t border-gray-200 pt-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center"><Book className="mr-3 h-6 w-6 text-primary-600" /> Lesson Material</h2>
+            {renderContent()}
+          </div>
+        </div>
 
-              <div className="pt-6">
-                <button 
-                  onClick={handleStartQuiz}
-                  className="btn-primary flex items-center space-x-2"
-                >
-                  <Play className="h-5 w-5" />
-                  <span>{lesson.completed ? 'Retake Quiz' : 'Start Interactive Quiz'}</span>
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {activeTab === 'content' && (
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="space-y-8"
-            >
-              {/* Vocabulary Section */}
-              {lesson.content.vocabulary && (
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Key Vocabulary</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {lesson.content.vocabulary.map((item, index) => (
-                      <div key={index} className="bg-gray-50 p-4 rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-semibold text-gray-900">{item.word}</h4>
-                          <button 
-                            onClick={() => playPronunciation(item.word)}
-                            className="p-1 hover:bg-gray-200 rounded transition-colors"
-                            title="Play pronunciation"
-                          >
-                            <Volume2 className="h-4 w-4 text-gray-600" />
-                          </button>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-2">{item.pronunciation}</p>
-                        <p className="text-gray-700">{item.meaning}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Grammar Rules */}
-              {lesson.content.rules && (
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Grammar Rules</h3>
-                  <div className="space-y-3">
-                    {lesson.content.rules.map((rule, index) => (
-                      <div key={index} className="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg">
-                        <div className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium">
-                          {index + 1}
-                        </div>
-                        <p className="text-gray-700">{rule}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Examples */}
-              {lesson.content.examples && (
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Examples</h3>
-                  <div className="space-y-4">
-                    {lesson.content.examples.map((example, index) => (
-                      <div key={index} className="grid md:grid-cols-3 gap-4 p-4 border border-gray-200 rounded-lg">
-                        <div>
-                          <p className="text-sm font-medium text-green-700 mb-1">Positive</p>
-                          <p className="text-gray-900">{example.positive}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-red-700 mb-1">Negative</p>
-                          <p className="text-gray-900">{example.negative}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-blue-700 mb-1">Question</p>
-                          <p className="text-gray-900">{example.question}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Dialogues */}
-              {lesson.content.dialogues && (
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Sample Dialogues</h3>
-                  {lesson.content.dialogues.map((dialogue, index) => (
-                    <div key={index} className="mb-6">
-                      <h4 className="font-medium text-gray-900 mb-3">{dialogue.title}</h4>
-                      <div className="space-y-2 bg-gray-50 p-4 rounded-lg">
-                        {dialogue.conversation.map((line, lineIndex) => (
-                          <div key={lineIndex} className="flex items-start space-x-3">
-                            <span className="bg-primary-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium">
-                              {line.speaker}
-                            </span>
-                            <p className="text-gray-700 flex-1">{line.text}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </motion.div>
-          )}
-
-          {activeTab === 'practice' && (
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="space-y-6"
-            >
-              <div className="text-center py-12">
-                <Play className="h-16 w-16 text-primary-300 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Interactive Practice</h3>
-                <p className="text-gray-600 mb-6">
-                  Test your knowledge with our interactive quiz featuring multiple question types.
-                </p>
-                <button 
-                  onClick={handleStartQuiz}
-                  className="btn-primary flex items-center space-x-2 mx-auto"
-                >
-                  <Play className="h-5 w-5" />
-                  <span>Start Practice Quiz</span>
-                </button>
-              </div>
-            </motion.div>
-          )}
+        {/* Action Button */}
+        <div className="text-center">
+          <button
+            onClick={() => navigate(`/quiz/${lesson.id}`)}
+            className="btn-primary btn-lg inline-flex items-center space-x-2"
+          >
+            <span>{isCompleted ? 'Retake Quiz' : 'Start Quiz'}</span>
+            <ArrowRight className="h-5 w-5" />
+          </button>
         </div>
       </motion.div>
     </div>

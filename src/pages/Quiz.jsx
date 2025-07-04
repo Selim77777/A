@@ -1,14 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, XCircle, ArrowRight, ArrowLeft, Trophy, RotateCcw } from 'lucide-react';
 import { lessons } from '../data/lessons';
+import Modal from '../components/Modal';
 import { useUser } from '../context/UserContext';
 
 const Quiz = () => {
   const { lessonId } = useParams();
   const navigate = useNavigate();
-  const { updateProgress, completeLesson } = useUser();
+  const { user, updateProgress, completeLesson } = useUser();
   
   const [lesson, setLesson] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -17,61 +18,72 @@ const Quiz = () => {
   const [score, setScore] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const [isRestartModalOpen, setIsRestartModalOpen] = useState(false);
 
-  // Generate quiz questions from lesson content
-  const generateQuizQuestions = (lessonContent) => {
-    const questions = [];
-    
-    // Add vocabulary questions
-    if (lessonContent.vocabulary) {
-      lessonContent.vocabulary.forEach(item => {
+  const questions = useMemo(() => {
+    if (!lesson) return [];
+
+    const generateQuizQuestions = (lessonContent) => {
+      const allVocabMeanings = lessons
+        .flatMap(l => l.content.vocabulary || [])
+        .map(v => v.meaning);
+
+      const getDistractors = (correctAnswer, count) => {
+        const distractors = new Set();
+        const possibleDistractors = allVocabMeanings.filter(m => m !== correctAnswer);
+        while (distractors.size < count && possibleDistractors.length > 0) {
+          const randomIndex = Math.floor(Math.random() * possibleDistractors.length);
+          distractors.add(possibleDistractors.splice(randomIndex, 1)[0]);
+        }
+        return Array.from(distractors);
+      };
+
+      const questions = [];
+      
+      if (lessonContent.vocabulary) {
+        lessonContent.vocabulary.forEach(item => {
+          const distractors = getDistractors(item.meaning, 3);
+          questions.push({
+            type: 'multiple-choice',
+            question: `What does "${item.word}" mean?`,
+            options: [item.meaning, ...distractors].sort(() => Math.random() - 0.5),
+            answer: item.meaning,
+            category: 'vocabulary'
+          });
+        });
+      }
+
+      if (lessonContent.exercises) {
+        questions.push(...lessonContent.exercises);
+      }
+
+      if (lessonContent.rules) {
         questions.push({
           type: 'multiple-choice',
-          question: `What does "${item.word}" mean?`,
+          question: 'Which sentence uses correct grammar?',
           options: [
-            item.meaning,
-            'A type of food',
-            'A place to visit',
-            'A way to travel'
-          ].sort(() => Math.random() - 0.5),
-          answer: item.meaning,
-          category: 'vocabulary'
+            'He goes to work every day',
+            'He go to work every day',
+            'He going to work every day',
+            'He gone to work every day'
+          ],
+          answer: 'He goes to work every day',
+          category: 'grammar'
         });
-      });
-    }
+      }
 
-    // Add existing exercises
-    if (lessonContent.exercises) {
-      questions.push(...lessonContent.exercises);
-    }
-
-    // Add grammar questions for grammar lessons
-    if (lessonContent.rules) {
-      questions.push({
-        type: 'multiple-choice',
-        question: 'Which sentence uses correct grammar?',
-        options: [
-          'He goes to work every day',
-          'He go to work every day',
-          'He going to work every day',
-          'He gone to work every day'
-        ],
-        answer: 'He goes to work every day',
-        category: 'grammar'
-      });
-    }
-
-    return questions.slice(0, 5); // Limit to 5 questions
-  };
+      return questions.sort(() => 0.5 - Math.random()).slice(0, 5);
+    };
+    return generateQuizQuestions(lesson.content);
+  }, [lesson]);
 
   useEffect(() => {
     const foundLesson = lessons.find(l => l.id === parseInt(lessonId));
     if (foundLesson) {
       setLesson(foundLesson);
-      const quizQuestions = generateQuizQuestions(foundLesson.content);
-      setAnswers(new Array(quizQuestions.length).fill(null));
+      setAnswers(new Array(questions.length).fill(null));
     }
-  }, [lessonId]);
+  }, [lessonId, questions.length]);
 
   if (!lesson) {
     return (
@@ -84,7 +96,6 @@ const Quiz = () => {
     );
   }
 
-  const questions = generateQuizQuestions(lesson.content);
   const currentQ = questions[currentQuestion];
 
   const handleAnswerSelect = (answer) => {
@@ -113,9 +124,7 @@ const Quiz = () => {
       
       // Update user progress
       updateProgress(lesson.category.toLowerCase(), finalScore > 70 ? 10 : 5);
-      if (!lesson.completed) {
-        completeLesson(lesson.id);
-      }
+      completeLesson(lesson.id, finalScore);
     }
   };
 
@@ -139,6 +148,7 @@ const Quiz = () => {
     setScore(0);
     setAnswers(new Array(questions.length).fill(null));
     setQuizCompleted(false);
+    setIsRestartModalOpen(false);
   };
 
   const goToLessons = () => {
@@ -232,8 +242,8 @@ const Quiz = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 mt-8">
-            <button 
-              onClick={restartQuiz}
+            <button
+              onClick={() => setIsRestartModalOpen(true)}
               className="btn-secondary flex items-center justify-center space-x-2"
             >
               <RotateCcw className="h-4 w-4" />
@@ -248,6 +258,23 @@ const Quiz = () => {
             </button>
           </div>
         </div>
+        <Modal
+          isOpen={isRestartModalOpen}
+          onClose={() => setIsRestartModalOpen(false)}
+          title="Restart Quiz?"
+        >
+          <p className="text-gray-600 mb-6">
+            Are you sure you want to restart this quiz? Your current attempt's score will not be saved.
+          </p>
+          <div className="flex justify-end gap-4">
+            <button onClick={() => setIsRestartModalOpen(false)} className="btn-secondary">
+              Cancel
+            </button>
+            <button onClick={restartQuiz} className="btn-primary bg-red-600 hover:bg-red-700">
+              Restart
+            </button>
+          </div>
+        </Modal>
       </motion.div>
     );
   }
