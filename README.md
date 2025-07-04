@@ -1,12 +1,48 @@
-# React + Vite
+# a-project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A project for testing dependencies.
 
-Currently, two official plugins are available:
+This project is set up to demonstrate and test various npm packages. It currently includes tests for the `is-number` library.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Getting Started
 
-## Expanding the ESLint configuration
+### Prerequisites
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+*   Node.js
+*   npm (or another package manager like yarn or pnpm)
+
+### Installation
+
+1.  Clone the repository.
+2.  Install the dependencies:
+    ```sh
+    npm install
+    ```
+
+## Running Tests
+
+To run the unit tests for the dependencies, use the following command:
+
+```sh
+npm test
+```
+
+This will execute the test files located in the `test/` directory using Mocha.
+
+## Linting
+
+This project uses ESLint to enforce code style and catch common errors. To run the linter, use the following command:
+
+```sh
+npm run lint
+```
+
+## Dependencies
+
+*   is-number: Returns true if the value is a finite number.
+*   word-wrap: Wraps words to a specified length.
+
+## Development Dependencies
+
+*   mocha: A feature-rich JavaScript test framework running on Node.js and in the browser.
+*   eslint: A tool for identifying and reporting on patterns found in ECMAScript/JavaScript code.
