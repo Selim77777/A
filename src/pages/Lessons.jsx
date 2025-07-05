@@ -1,11 +1,10 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { lessons, categories } from '../data/lessons';
-import { useUser } from '../context/UserContext';
-import { CheckCircle, Filter, Search } from 'lucide-react';
-import Skeleton from '../components/skeletons/Skeleton';
-import { useLoading } from '../hooks/useLoading';
+import { lessons, categories } from '@/data/lessons';
+import { useUser } from '@/context/UserContext';
+import { Filter, Search } from 'lucide-react';
+import { useLoading } from '@/hooks/useLoading.js';
+import LessonCard from '@/components/LessonCard.jsx';
 
 const Lessons = () => {
   const { user } = useUser();
@@ -13,41 +12,22 @@ const Lessons = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const loading = useLoading(1000);
 
-  const filteredLessons = lessons
-    .filter(lesson => selectedCategory === 'All' || lesson.category === selectedCategory)
-    .filter(lesson => lesson.title.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredLessons = useMemo(() => {
+    return lessons
+      .filter(lesson => selectedCategory === 'All' || lesson.category === selectedCategory)
+      .filter(lesson => lesson.title.toLowerCase().includes(searchTerm.toLowerCase()));
+  }, [lessons, selectedCategory, searchTerm]);
 
   const isLessonCompleted = (lessonId) => {
     return user.completedLessonIds.includes(lessonId);
   };
 
-  const LessonSkeleton = () => (
-    <div className="card h-full flex flex-col">
-      <div className="p-6 flex-grow">
-        <div className="flex justify-between items-start mb-4">
-          <Skeleton className="h-5 w-24" />
-        </div>
-        <Skeleton className="h-6 w-3/4 mb-2" />
-        <Skeleton className="h-4 w-full mb-1" />
-        <Skeleton className="h-4 w-5/6" />
-      </div>
-      <div className="p-6 bg-gray-50 rounded-b-xl border-t border-gray-200 flex items-center justify-between">
-        <Skeleton className="h-4 w-16" />
-        <Skeleton className="h-4 w-12" />
-      </div>
-    </div>
-  );
-
   if (loading) {
     return (
-      <div className="space-y-8">
-        <div>
-          <Skeleton className="h-8 w-1/3 mb-2" />
-          <Skeleton className="h-5 w-1/2" />
-        </div>
-        <Skeleton className="h-10 w-full" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {Array.from({ length: 6 }).map((_, index) => <LessonSkeleton key={index} />)}
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading lessons...</p>
         </div>
       </div>
     );
@@ -112,46 +92,14 @@ const Lessons = () => {
       {/* Lessons Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {filteredLessons.length > 0 ? (
-          filteredLessons.map((lesson, index) => {
-            const completed = isLessonCompleted(lesson.id);
-            return (
-              <motion.div
-                key={lesson.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 + index * 0.05 }}
-              >
-                <Link to={`/lesson/${lesson.id}`} className="card-link-wrapper">
-                  <div className="card h-full flex flex-col">
-                    <div className="p-6 flex-grow">
-                      <div className="flex justify-between items-start mb-4">
-                        <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                          lesson.category === 'Grammar' ? 'bg-blue-100 text-blue-800' :
-                          lesson.category === 'Vocabulary' ? 'bg-green-100 text-green-800' :
-                          lesson.category === 'Reading' ? 'bg-red-100 text-red-800' :
-                          'bg-purple-100 text-purple-800'
-                        }`}>
-                          {lesson.category}
-                        </span>
-                        {completed && (
-                          <div className="flex items-center space-x-1 text-green-600">
-                            <CheckCircle className="h-5 w-5" />
-                            <span className="text-sm font-medium">Completed</span>
-                          </div>
-                        )}
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">{lesson.title}</h3>
-                      <p className="text-gray-600 text-sm mb-4">{lesson.description}</p>
-                    </div>
-                    <div className="p-6 bg-gray-50 rounded-b-xl border-t border-gray-200 flex items-center justify-between text-sm text-gray-500">
-                      <span>{lesson.level}</span>
-                      <span>{lesson.duration}</span>
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            );
-          })
+          filteredLessons.map((lesson, index) => (
+            <LessonCard
+              key={lesson.id}
+              lesson={lesson}
+              isCompleted={isLessonCompleted(lesson.id)}
+              index={index}
+            />
+          ))
         ) : (
           <div className="col-span-full text-center py-16">
             <h3 className="text-xl font-semibold text-gray-800">No lessons found</h3>

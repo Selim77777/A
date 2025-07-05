@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useUser } from '../context/UserContext';
+import { useUser } from '@/context/UserContext';
 import { User, Save, AlertTriangle, RotateCcw } from 'lucide-react';
 import toast from 'react-hot-toast';
-import Modal from '../components/Modal';
+import Modal from '@/components/Modal.jsx';
 
 const Settings = () => {
   const { user, updateUserName, resetProgress } = useUser();

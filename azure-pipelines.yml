@@ -16,6 +16,21 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
-    npm install
+    npm ci
+  displayName: 'Install Dependencies'
+
+- script: |
+    npm run lint
+  displayName: 'Lint Code'
+
+- script: |
+    npm run check-format
+  displayName: 'Check Formatting'
+
+- script: |
+    npm test
+  displayName: 'Run Unit Tests'
+
+- script: |
     npm run build
-  displayName: 'npm install and build'
+  displayName: 'Build Project'

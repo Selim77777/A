@@ -1,54 +1,54 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BookOpen, Users, Award, TrendingUp, Play, Star } from 'lucide-react';
-import { useUser } from '../context/UserContext';
+import { useUser } from '@/context/UserContext';
+
+const features = [
+  {
+    icon: BookOpen,
+    title: "Interactive Lessons",
+    description: "Engaging lessons with multimedia content, quizzes, and real-world scenarios."
+  },
+  {
+    icon: Users,
+    title: "Personalized Learning",
+    description: "Adaptive learning paths that adjust to your pace and learning style."
+  },
+  {
+    icon: Award,
+    title: "Progress Tracking",
+    description: "Monitor your improvement with detailed analytics and achievement badges."
+  },
+  {
+    icon: TrendingUp,
+    title: "Skill Development",
+    description: "Focus on grammar, vocabulary, speaking, listening, reading, and writing."
+  }
+];
+
+const testimonials = [
+  {
+    name: "Maria Rodriguez",
+    level: "Intermediate",
+    text: "This platform helped me improve my English so much! The interactive exercises are amazing.",
+    rating: 5
+  },
+  {
+    name: "Ahmed Hassan",
+    level: "Beginner",
+    text: "Perfect for beginners like me. The lessons are clear and easy to follow.",
+    rating: 5
+  },
+  {
+    name: "Li Wei",
+    level: "Advanced",
+    text: "Great for business English preparation. The professional modules are excellent.",
+    rating: 5
+  }
+];
 
 const Home = () => {
   const { user } = useUser();
-
-  const features = [
-    {
-      icon: BookOpen,
-      title: "Interactive Lessons",
-      description: "Engaging lessons with multimedia content, quizzes, and real-world scenarios."
-    },
-    {
-      icon: Users,
-      title: "Personalized Learning",
-      description: "Adaptive learning paths that adjust to your pace and learning style."
-    },
-    {
-      icon: Award,
-      title: "Progress Tracking",
-      description: "Monitor your improvement with detailed analytics and achievement badges."
-    },
-    {
-      icon: TrendingUp,
-      title: "Skill Development",
-      description: "Focus on grammar, vocabulary, speaking, listening, reading, and writing."
-    }
-  ];
-
-  const testimonials = [
-    {
-      name: "Maria Rodriguez",
-      level: "Intermediate",
-      text: "This platform helped me improve my English so much! The interactive exercises are amazing.",
-      rating: 5
-    },
-    {
-      name: "Ahmed Hassan",
-      level: "Beginner",
-      text: "Perfect for beginners like me. The lessons are clear and easy to follow.",
-      rating: 5
-    },
-    {
-      name: "Li Wei",
-      level: "Advanced",
-      text: "Great for business English preparation. The professional modules are excellent.",
-      rating: 5
-    }
-  ];
 
   return (
     <div className="space-y-16">
@@ -65,7 +65,7 @@ const Home = () => {
             <span className="bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent"> Interactive Learning</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-            Welcome back, {user.name}! Continue your English learning journey with personalized lessons, 
+            Welcome back, {user?.name ?? 'learner'}! Continue your English learning journey with personalized lessons, 
             interactive exercises, and real-time progress tracking.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -89,19 +89,19 @@ const Home = () => {
         className="grid grid-cols-2 md:grid-cols-4 gap-6"
       >
         <div className="card p-6 text-center">
-          <div className="text-3xl font-bold text-primary-600 mb-2">{user.totalPoints}</div>
+          <div className="text-3xl font-bold text-primary-600 mb-2">{user?.totalPoints ?? 0}</div>
           <div className="text-gray-600">Total Points</div>
         </div>
         <div className="card p-6 text-center">
-          <div className="text-3xl font-bold text-secondary-600 mb-2">{user.completedLessons}</div>
+          <div className="text-3xl font-bold text-secondary-600 mb-2">{user?.completedLessons ?? 0}</div>
           <div className="text-gray-600">Lessons Completed</div>
         </div>
         <div className="card p-6 text-center">
-          <div className="text-3xl font-bold text-orange-600 mb-2">{user.streak}</div>
+          <div className="text-3xl font-bold text-orange-600 mb-2">{user?.streak ?? 0}</div>
           <div className="text-gray-600">Day Streak</div>
         </div>
         <div className="card p-6 text-center">
-          <div className="text-3xl font-bold text-purple-600 mb-2">Level {user.level}</div>
+          <div className="text-3xl font-bold text-purple-600 mb-2">Level {user?.level ?? 1}</div>
           <div className="text-gray-600">Current Level</div>
         </div>
       </motion.section>
@@ -126,7 +126,7 @@ const Home = () => {
             const Icon = feature.icon;
             return (
               <motion.div
-                key={index}
+                key={feature.title}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 * index }}
@@ -158,7 +158,7 @@ const Home = () => {
         <div className="grid md:grid-cols-3 gap-8 px-8">
           {testimonials.map((testimonial, index) => (
             <motion.div
-              key={index}
+              key={testimonial.name}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 * index }}
