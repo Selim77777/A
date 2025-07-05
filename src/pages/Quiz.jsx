@@ -2,9 +2,10 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, XCircle, ArrowRight, ArrowLeft, Trophy, RotateCcw } from 'lucide-react';
-import { lessons } from '../data/lessons';
-import Modal from '../components/Modal';
-import { useUser } from '../context/UserContext';
+import { lessons } from '@/data/lessons';
+import Modal from '@/components/Modal.jsx';
+import { useUser } from '@/context/UserContext';
+import { generateQuizQuestions } from '@/utils/quizGenerator.js';
 
 const Quiz = () => {
   const { lessonId } = useParams();
@@ -21,69 +22,21 @@ const Quiz = () => {
   const [isRestartModalOpen, setIsRestartModalOpen] = useState(false);
 
   const questions = useMemo(() => {
-    if (!lesson) return [];
-
-    const generateQuizQuestions = (lessonContent) => {
-      const allVocabMeanings = lessons
-        .flatMap(l => l.content.vocabulary || [])
-        .map(v => v.meaning);
-
-      const getDistractors = (correctAnswer, count) => {
-        const distractors = new Set();
-        const possibleDistractors = allVocabMeanings.filter(m => m !== correctAnswer);
-        while (distractors.size < count && possibleDistractors.length > 0) {
-          const randomIndex = Math.floor(Math.random() * possibleDistractors.length);
-          distractors.add(possibleDistractors.splice(randomIndex, 1)[0]);
-        }
-        return Array.from(distractors);
-      };
-
-      const questions = [];
-      
-      if (lessonContent.vocabulary) {
-        lessonContent.vocabulary.forEach(item => {
-          const distractors = getDistractors(item.meaning, 3);
-          questions.push({
-            type: 'multiple-choice',
-            question: `What does "${item.word}" mean?`,
-            options: [item.meaning, ...distractors].sort(() => Math.random() - 0.5),
-            answer: item.meaning,
-            category: 'vocabulary'
-          });
-        });
-      }
-
-      if (lessonContent.exercises) {
-        questions.push(...lessonContent.exercises);
-      }
-
-      if (lessonContent.rules) {
-        questions.push({
-          type: 'multiple-choice',
-          question: 'Which sentence uses correct grammar?',
-          options: [
-            'He goes to work every day',
-            'He go to work every day',
-            'He going to work every day',
-            'He gone to work every day'
-          ],
-          answer: 'He goes to work every day',
-          category: 'grammar'
-        });
-      }
-
-      return questions.sort(() => 0.5 - Math.random()).slice(0, 5);
-    };
-    return generateQuizQuestions(lesson.content);
+    return lesson ? generateQuizQuestions(lesson.content) : [];
   }, [lesson]);
 
   useEffect(() => {
     const foundLesson = lessons.find(l => l.id === parseInt(lessonId));
     if (foundLesson) {
       setLesson(foundLesson);
+    }
+  }, [lessonId]);
+
+  useEffect(() => {
+    if (questions.length > 0) {
       setAnswers(new Array(questions.length).fill(null));
     }
-  }, [lessonId, questions.length]);
+  }, [questions]);
 
   if (!lesson) {
     return (

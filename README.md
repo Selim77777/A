@@ -1,48 +1,43 @@
-# a-project
+[![Netlify Status](https://api.netlify.com/api/v1/badges/d769c4a8-593e-44c7-a5a0-10ac2f781f1f/deploy-status)](https://app.netlify.com/sites/eslpathway/deploys)
+# esl-master-app
 
-A project for testing dependencies.
-
-This project is set up to demonstrate and test various npm packages. It currently includes tests for the `is-number` library.
+This is a modern web application built with React and Vite.
 
 ## Getting Started
 
 ### Prerequisites
 
-*   Node.js
-*   npm (or another package manager like yarn or pnpm)
+*   Node.js (v18.x or later recommended)
+*   npm
 
 ### Installation
 
 1.  Clone the repository.
 2.  Install the dependencies:
     ```sh
-    npm install
+    npm ci
     ```
 
-## Running Tests
+## Available Scripts
 
-To run the unit tests for the dependencies, use the following command:
+In the project directory, you can run:
 
-```sh
-npm test
-```
+### `npm run dev`
 
-This will execute the test files located in the `test/` directory using Mocha.
+Runs the app in the development mode.
+Open http://localhost:5173 (or the port shown in the terminal) to view it in the browser.
 
-## Linting
+The page will reload if you make edits.
 
-This project uses ESLint to enforce code style and catch common errors. To run the linter, use the following command:
+### `npm run build`
 
-```sh
-npm run lint
-```
+Builds the app for production to the `dist` folder.
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-## Dependencies
+### `npm run lint`
 
-*   is-number: Returns true if the value is a finite number.
-*   word-wrap: Wraps words to a specified length.
+Runs ESLint to find and fix problems in your JavaScript code.
 
-## Development Dependencies
+### `npm run preview`
 
-*   mocha: A feature-rich JavaScript test framework running on Node.js and in the browser.
-*   eslint: A tool for identifying and reporting on patterns found in ECMAScript/JavaScript code.
+Serves the production build locally to preview it before deployment.

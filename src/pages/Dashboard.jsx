@@ -1,121 +1,156 @@
 import { motion } from 'framer-motion';
-import { TrendingUp, Award, Calendar, Target, BookOpen, Clock } from 'lucide-react';
-import { useUser } from '../context/UserContext';
+import { useUser } from '@/context/UserContext';
+import { Award, BookOpen, BarChart3, Zap, CheckCircle, Target, Settings as SettingsIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { lessons } from '@/data/lessons';
+import Skeleton from '@/components/skeletons/Skeleton.jsx';
+import { useLoading } from '@/hooks/useLoading.js';
 
 const Dashboard = () => {
-  const { user, progress } = useUser();
+  const { user } = useUser();
+  const loading = useLoading(800);
 
-  const skillsData = [
-    { name: 'Grammar', progress: progress.grammar, color: 'bg-blue-500' },
-    { name: 'Vocabulary', progress: progress.vocabulary, color: 'bg-green-500' },
-    { name: 'Listening', progress: progress.listening, color: 'bg-purple-500' },
-    { name: 'Speaking', progress: progress.speaking, color: 'bg-orange-500' },
-    { name: 'Reading', progress: progress.reading, color: 'bg-red-500' },
-    { name: 'Writing', progress: progress.writing, color: 'bg-indigo-500' }
+  // Get the 5 most recently completed, unique lessons
+  const getRecentLessons = () => {
+    if (!user.lessonHistory || user.lessonHistory.length === 0) {
+      // Fallback to completedLessonIds if history is empty
+      return lessons.filter(l => user.completedLessonIds.includes(l.id)).slice(0, 5);
+    }
+    const recentUniqueLessonIds = [...user.lessonHistory]
+      .reverse()
+      .map(historyItem => historyItem.lessonId)
+      .filter((id, index, self) => self.indexOf(id) === index) // Get unique IDs
+      .slice(0, 5);
+    return recentUniqueLessonIds.map(id => lessons.find(lesson => lesson.id === id)).filter(Boolean); // filter(Boolean) removes any undefined if a lesson is not found
+  };
+
+  const recentLessonDetails = getRecentLessons();
+
+  const stats = [
+    { icon: Award, label: 'Total Points', value: user.totalPoints, color: 'text-primary-600' },
+    { icon: BookOpen, label: 'Lessons Completed', value: user.completedLessons, color: 'text-secondary-600' },
+    { icon: Zap, label: 'Day Streak', value: user.streak, color: 'text-orange-500' },
+    { icon: BarChart3, label: 'Current Level', value: `Level ${user.level}`, color: 'text-purple-600' },
   ];
 
-  const recentActivity = [
-    { lesson: 'Basic Greetings & Introductions', score: 95, date: '2 hours ago', type: 'completed' },
-    { lesson: 'Present Simple Tense', score: 88, date: '1 day ago', type: 'completed' },
-    { lesson: 'Food & Restaurant Vocabulary', score: null, date: '3 days ago', type: 'started' }
+  const skills = [
+    { name: 'Grammar', progress: user.progress.grammar || 0, color: 'bg-primary-500' },
+    { name: 'Vocabulary', progress: user.progress.vocabulary || 0, color: 'bg-secondary-500' },
+    { name: 'Reading', progress: user.progress.reading || 0, color: 'bg-green-500' },
+    { name: 'Listening', progress: user.progress.listening || 0, color: 'bg-yellow-500' },
   ];
 
-  const weeklyGoals = [
-    { goal: 'Complete 5 lessons', current: 3, target: 5, icon: BookOpen },
-    { goal: 'Study 10 hours', current: 7, target: 10, icon: Clock },
-    { goal: 'Maintain 7-day streak', current: 7, target: 7, icon: Calendar }
-  ];
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        {/* Header Skeleton */}
+        <div>
+          <Skeleton className="h-8 w-1/3 mb-2" />
+          <Skeleton className="h-5 w-1/2" />
+        </div>
+
+        {/* Stats Grid Skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="card p-6 flex items-center space-x-4">
+              <Skeleton className="h-12 w-12 rounded-full" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-6 w-1/2" />
+                <Skeleton className="h-4 w-3/4" />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Skill Progress Skeleton */}
+          <div className="lg:col-span-2 card p-8 space-y-5">
+            <Skeleton className="h-7 w-1/4 mb-4" />
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={index}>
+                <div className="flex justify-between items-center mb-1">
+                  <Skeleton className="h-5 w-1/5" />
+                  <Skeleton className="h-4 w-10" />
+                </div>
+                <Skeleton className="h-2.5 w-full" />
+              </div>
+            ))}
+          </div>
+
+          {/* Recent Activity Skeleton */}
+          <div className="card p-8 space-y-4">
+            <Skeleton className="h-7 w-3/4 mb-4" />
+            {Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-8 w-full" />)}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center"
       >
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, {user.name}!</h1>
-        <p className="text-gray-600">Here's your learning progress overview</p>
-      </motion.div>
-
-      {/* Stats Cards */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-      >
-        <div className="card p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Points</p>
-              <p className="text-2xl font-bold text-primary-600">{user.totalPoints}</p>
-            </div>
-            <div className="bg-primary-100 p-3 rounded-full">
-              <Award className="h-6 w-6 text-primary-600" />
-            </div>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Your Dashboard</h1>
+            <p className="text-lg text-gray-600 mt-1">Welcome back, {user.name}! Here's your progress.</p>
           </div>
-        </div>
-
-        <div className="card p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Current Level</p>
-              <p className="text-2xl font-bold text-secondary-600">Level {user.level}</p>
-            </div>
-            <div className="bg-secondary-100 p-3 rounded-full">
-              <TrendingUp className="h-6 w-6 text-secondary-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="card p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Lessons Completed</p>
-              <p className="text-2xl font-bold text-purple-600">{user.completedLessons}</p>
-            </div>
-            <div className="bg-purple-100 p-3 rounded-full">
-              <BookOpen className="h-6 w-6 text-purple-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="card p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Current Streak</p>
-              <p className="text-2xl font-bold text-orange-600">{user.streak} days</p>
-            </div>
-            <div className="bg-orange-100 p-3 rounded-full">
-              <Calendar className="h-6 w-6 text-orange-600" />
-            </div>
-          </div>
+          <Link to="/settings" className="btn-secondary inline-flex items-center space-x-2">
+            <SettingsIcon className="h-5 w-5" />
+            <span>Settings</span>
+          </Link>
         </div>
       </motion.div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
-        {/* Skills Progress */}
-        <motion.div 
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 * index }}
+            className="card p-6 flex items-center space-x-4"
+          >
+            <div className={`p-3 rounded-full bg-gray-100 ${stat.color}`}>
+              <stat.icon className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+              <p className="text-sm text-gray-600">{stat.label}</p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Skill Progress */}
+        <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-          className="card p-6"
+          transition={{ delay: 0.4 }}
+          className="lg:col-span-2 card p-8"
         >
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Skills Progress</h2>
-          <div className="space-y-4">
-            {skillsData.map((skill, index) => (
+          <div className="flex items-center space-x-3 mb-6">
+            <Target className="h-6 w-6 text-primary-600" />
+            <h2 className="text-2xl font-bold text-gray-900">Skill Progress</h2>
+          </div>
+          <div className="space-y-5">
+            {skills.map(skill => (
               <div key={skill.name}>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-gray-700">{skill.name}</span>
-                  <span className="text-sm text-gray-500">{skill.progress}%</span>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-medium text-gray-700">{skill.name}</span>
+                  <span className="text-sm font-semibold text-gray-600">{skill.progress}%</span>
                 </div>
                 <div className="progress-bar">
-                  <motion.div 
+                  <motion.div
+                    className={`progress-fill ${skill.color}`}
                     initial={{ width: 0 }}
                     animate={{ width: `${skill.progress}%` }}
-                    transition={{ delay: 0.3 + index * 0.1, duration: 0.8 }}
-                    className={`progress-fill ${skill.color}`}
+                    transition={{ duration: 1, delay: 0.5 }}
                   />
                 </div>
               </div>
@@ -123,94 +158,36 @@ const Dashboard = () => {
           </div>
         </motion.div>
 
-        {/* Weekly Goals */}
-        <motion.div 
+        {/* Recent Activity */}
+        <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-          className="card p-6"
+          transition={{ delay: 0.5 }}
+          className="card p-8"
         >
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Weekly Goals</h2>
-          <div className="space-y-4">
-            {weeklyGoals.map((goal, index) => {
-              const Icon = goal.icon;
-              const percentage = (goal.current / goal.target) * 100;
-              return (
-                <div key={index} className="flex items-center space-x-4">
-                  <div className="bg-gray-100 p-2 rounded-lg">
-                    <Icon className="h-5 w-5 text-gray-600" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm font-medium text-gray-700">{goal.goal}</span>
-                      <span className="text-sm text-gray-500">{goal.current}/{goal.target}</span>
-                    </div>
-                    <div className="progress-bar">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${percentage}%` }}
-                        transition={{ delay: 0.4 + index * 0.1, duration: 0.8 }}
-                        className="progress-fill"
-                      />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="flex items-center space-x-3 mb-6">
+            <CheckCircle className="h-6 w-6 text-green-500" />
+            <h2 className="text-2xl font-bold text-gray-900">Completed Lessons</h2>
           </div>
+          {recentLessonDetails.length > 0 ? (
+            <ul className="space-y-4">
+              {recentLessonDetails.map(lesson => (
+                <li key={lesson.id} className="flex items-center space-x-3">
+                  <div className="p-2 bg-green-100 rounded-full">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  </div>
+                  <span className="text-gray-700">{lesson.title}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500 text-center py-4">
+              You haven't completed any lessons yet.
+              <Link to="/lessons" className="text-primary-600 hover:underline font-medium ml-1">Start one now!</Link>
+            </p>
+          )}
         </motion.div>
       </div>
-
-      {/* Recent Activity */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="card p-6"
-      >
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Recent Activity</h2>
-        <div className="space-y-4">
-          {recentActivity.map((activity, index) => (
-            <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center space-x-4">
-                <div className={`w-3 h-3 rounded-full ${
-                  activity.type === 'completed' ? 'bg-green-500' : 'bg-yellow-500'
-                }`} />
-                <div>
-                  <p className="font-medium text-gray-900">{activity.lesson}</p>
-                  <p className="text-sm text-gray-500">{activity.date}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                {activity.score && (
-                  <p className="font-semibold text-green-600">{activity.score}%</p>
-                )}
-                <p className="text-sm text-gray-500 capitalize">{activity.type}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Achievements */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="card p-6"
-      >
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Recent Achievements</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {user.achievements.map((achievement, index) => (
-            <div key={index} className="flex items-center space-x-3 p-4 bg-gradient-to-r from-primary-50 to-secondary-50 rounded-lg">
-              <div className="bg-gradient-to-r from-primary-500 to-secondary-500 p-2 rounded-full">
-                <Award className="h-5 w-5 text-white" />
-              </div>
-              <span className="font-medium text-gray-900">{achievement}</span>
-            </div>
-          ))}
-        </div>
-      </motion.div>
     </div>
   );
 };

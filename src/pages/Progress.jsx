@@ -1,43 +1,61 @@
 import { motion } from 'framer-motion';
-import { TrendingUp, Award, Calendar, Target, BookOpen, Clock, Star, Trophy } from 'lucide-react';
-import { useUser } from '../context/UserContext';
+import { TrendingUp, Award, Calendar, Target, BookOpen, Clock, Star, Trophy, CheckSquare } from 'lucide-react';
+import { useUser } from '@/context/UserContext';
+import { achievements as allAchievements } from '@/data/achievements';
+import { lessons } from '@/data/lessons';
+import { Link } from 'react-router-dom';
 
 const Progress = () => {
-  const { user, progress } = useUser();
+  const { user } = useUser();
 
   const skillsData = [
-    { name: 'Grammar', progress: progress.grammar, color: 'bg-blue-500', icon: '📚' },
-    { name: 'Vocabulary', progress: progress.vocabulary, color: 'bg-green-500', icon: '📝' },
-    { name: 'Listening', progress: progress.listening, color: 'bg-purple-500', icon: '👂' },
-    { name: 'Speaking', progress: progress.speaking, color: 'bg-orange-500', icon: '🗣️' },
-    { name: 'Reading', progress: progress.reading, color: 'bg-red-500', icon: '📖' },
-    { name: 'Writing', progress: progress.writing, color: 'bg-indigo-500', icon: '✍️' }
+    { name: 'Grammar', progress: user.progress.grammar, color: 'bg-blue-500', icon: '📚' },
+    { name: 'Vocabulary', progress: user.progress.vocabulary, color: 'bg-green-500', icon: '📝' },
+    { name: 'Listening', progress: user.progress.listening, color: 'bg-purple-500', icon: '👂' },
+    { name: 'Speaking', progress: user.progress.speaking, color: 'bg-orange-500', icon: '🗣️' },
+    { name: 'Reading', progress: user.progress.reading, color: 'bg-red-500', icon: '📖' },
+    { name: 'Writing', progress: user.progress.writing, color: 'bg-indigo-500', icon: '✍️' }
   ];
 
-  const weeklyData = [
-    { day: 'Mon', lessons: 2, time: 45 },
-    { day: 'Tue', lessons: 1, time: 30 },
-    { day: 'Wed', lessons: 3, time: 60 },
-    { day: 'Thu', lessons: 2, time: 40 },
-    { day: 'Fri', lessons: 1, time: 25 },
-    { day: 'Sat', lessons: 0, time: 0 },
-    { day: 'Sun', lessons: 2, time: 50 }
-  ];
+  // Calculate weekly activity from lessonHistory
+  const getWeeklyActivity = () => {
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const weeklyData = days.map(day => ({ day, lessons: 0, time: 0 }));
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-  const achievements = [
-    { name: 'First Steps', description: 'Complete your first lesson', earned: true, icon: '🎯' },
-    { name: 'Grammar Master', description: 'Score 90%+ on 5 grammar lessons', earned: true, icon: '📚' },
-    { name: 'Vocabulary Builder', description: 'Learn 100 new words', earned: true, icon: '📝' },
-    { name: 'Streak Master', description: 'Maintain a 7-day streak', earned: true, icon: '🔥' },
-    { name: 'Perfect Score', description: 'Get 100% on any lesson', earned: false, icon: '⭐' },
-    { name: 'Speed Learner', description: 'Complete 10 lessons in one week', earned: false, icon: '⚡' }
-  ];
+    user.lessonHistory
+      .filter(item => new Date(item.completedAt) > oneWeekAgo)
+      .forEach(item => {
+        const dayIndex = new Date(item.completedAt).getDay();
+        const lessonDetails = lessons.find(l => l.id === item.lessonId);
+        const duration = lessonDetails ? parseInt(lessonDetails.duration) || 15 : 15;
+        weeklyData[dayIndex].lessons += 1;
+        weeklyData[dayIndex].time += duration;
+      });
+    
+    // Rotate array to start from Monday
+    const sunday = weeklyData.shift();
+    weeklyData.push(sunday);
+    return weeklyData;
+  };
+
+  const weeklyData = getWeeklyActivity();
+
+  const achievements = allAchievements.map(ach => ({
+    ...ach,
+    earned: user.achievements.includes(ach.name),
+  }));
 
   const getSkillLevel = (progress) => {
     if (progress >= 80) return { level: 'Advanced', color: 'text-red-600' };
     if (progress >= 60) return { level: 'Intermediate', color: 'text-yellow-600' };
     return { level: 'Beginner', color: 'text-green-600' };
   };
+  
+  const completedLessonDetails = lessons.filter(lesson =>
+    user.completedLessonIds.includes(lesson.id)
+  );
 
   return (
     <div className="space-y-8">
@@ -91,7 +109,7 @@ const Progress = () => {
         </div>
       </motion.div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
+      <div className="grid lg:grid-cols-3 gap-8">
         {/* Skills Progress */}
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
@@ -140,7 +158,7 @@ const Progress = () => {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          className="card p-6"
+          className="card p-6 lg:col-span-2"
         >
           <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center space-x-2">
             <Calendar className="h-5 w-5" />
@@ -148,29 +166,29 @@ const Progress = () => {
           </h2>
           
           <div className="space-y-4">
-            {weeklyData.map((day, index) => (
-              <div key={day.day} className="flex items-center justify-between">
+            {weeklyData.map((dayData, index) => (
+              <div key={dayData.day} className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 text-center">
-                    <span className="text-sm font-medium text-gray-600">{day.day}</span>
+                    <span className="text-sm font-medium text-gray-600">{dayData.day}</span>
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center space-x-2">
                       <div className="bg-gray-200 rounded-full h-2 w-24">
                         <motion.div 
                           initial={{ width: 0 }}
-                          animate={{ width: `${(day.lessons / 3) * 100}%` }}
+                          animate={{ width: `${Math.min(100, (dayData.lessons / 3) * 100)}%` }}
                           transition={{ delay: 0.4 + index * 0.1, duration: 0.6 }}
                           className="bg-primary-500 h-2 rounded-full"
                         />
                       </div>
-                      <span className="text-sm text-gray-600">{day.lessons} lessons</span>
+                      <span className="text-sm text-gray-600">{dayData.lessons} lessons</span>
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center space-x-1 text-gray-500">
                   <Clock className="h-4 w-4" />
-                  <span className="text-sm">{day.time}m</span>
+                  <span className="text-sm">{dayData.time}m</span>
                 </div>
               </div>
             ))}
@@ -180,13 +198,13 @@ const Progress = () => {
             <div className="grid grid-cols-2 gap-4 text-center">
               <div>
                 <p className="text-2xl font-bold text-primary-600">
-                  {weeklyData.reduce((sum, day) => sum + day.lessons, 0)}
+                  {weeklyData.reduce((sum, dayData) => sum + dayData.lessons, 0)}
                 </p>
                 <p className="text-sm text-gray-600">Total Lessons</p>
               </div>
               <div>
                 <p className="text-2xl font-bold text-secondary-600">
-                  {weeklyData.reduce((sum, day) => sum + day.time, 0)}m
+                  {weeklyData.reduce((sum, dayData) => sum + dayData.time, 0)}m
                 </p>
                 <p className="text-sm text-gray-600">Study Time</p>
               </div>
@@ -246,68 +264,31 @@ const Progress = () => {
         </div>
       </motion.div>
 
-      {/* Learning Goals */}
+      {/* Lesson History */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
         className="card p-6"
       >
-        <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center space-x-2">
-          <Target className="h-5 w-5" />
-          <span>Learning Goals</span>
-        </h2>
-        
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <div className="bg-blue-500 p-2 rounded-full">
-                <BookOpen className="h-4 w-4 text-white" />
-              </div>
-              <div>
-                <p className="font-medium text-blue-900">Complete 20 lessons this month</p>
-                <p className="text-sm text-blue-700">Progress: {user.completedLessons}/20</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-2xl font-bold text-blue-600">
-                {Math.round((user.completedLessons / 20) * 100)}%
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <div className="bg-green-500 p-2 rounded-full">
-                <TrendingUp className="h-4 w-4 text-white" />
-              </div>
-              <div>
-                <p className="font-medium text-green-900">Reach Level 4</p>
-                <p className="text-sm text-green-700">Current: Level {user.level}</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-2xl font-bold text-green-600">75%</p>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between p-4 bg-orange-50 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <div className="bg-orange-500 p-2 rounded-full">
-                <Calendar className="h-4 w-4 text-white" />
-              </div>
-              <div>
-                <p className="font-medium text-orange-900">Maintain 30-day streak</p>
-                <p className="text-sm text-orange-700">Current: {user.streak} days</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-2xl font-bold text-orange-600">
-                {Math.round((user.streak / 30) * 100)}%
-              </p>
-            </div>
-          </div>
-        </div>
+        <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center"><CheckSquare className="mr-3 h-5 w-5 text-green-600" />Lesson History</h2>
+        {completedLessonDetails.length > 0 ? (
+            <ul className="space-y-4 max-h-96 overflow-y-auto pr-2">
+              {completedLessonDetails.slice().reverse().map(lesson => (
+                <li key={lesson.id} className="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                  <div>
+                    <p className="font-medium text-gray-800">{lesson.title}</p>
+                    <p className="text-sm text-gray-500">{lesson.category} &middot; {lesson.level}</p>
+                  </div>
+                  <Link to={`/lesson/${lesson.id}`} className="text-primary-600 hover:text-primary-800 font-medium text-sm">
+                    Review
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500 text-center py-8">No lessons completed yet.</p>
+          )}
       </motion.div>
     </div>
   );

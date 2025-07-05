@@ -23,7 +23,7 @@ export default {
           500: '#8b5cf6',
           600: '#7c3aed',
         }
-      }
+      },
     },
   },
   plugins: [],
