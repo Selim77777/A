@@ -1,12 +1,13 @@
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import RootLayout from "./components/RootLayout";
-import ProtectedRoute from "./components/ProtectedRoute";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 
+import RootLayout from "./components/RootLayout";
 // Import existing pages with correct names and relative paths
 import DashboardPage from './pages/DashboardPage';
 
 import LoginPage from "./pages/LoginPage";
-import NotFoundPage from "./pages/NotFoundPage";
+import NotFoundPage from './pages/NotFoundPage';
 
 // Import the new SignUp page
 import SignUpPage from "./pages/SignUpPage";
