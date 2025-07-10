@@ -1,5 +1,3 @@
-import { lessons } from '@/data/lessons.js';
-
 // Helper to shuffle arrays for randomizing questions and options
 const shuffleArray = (array) => {
   const newArray = [...array];
@@ -9,11 +7,6 @@ const shuffleArray = (array) => {
   }
   return newArray;
 };
-
-// Create a global vocabulary pool to ensure enough incorrect options
-const allVocabularyWords = [
-  ...new Set(lessons.flatMap(l => l.content.vocabulary || []).map(v => v.word))
-];
 
 export function generateQuizQuestions(lessonContent = {}, numQuestions = 5) {
   const questions = [];
@@ -29,20 +22,13 @@ export function generateQuizQuestions(lessonContent = {}, numQuestions = 5) {
 
   // 2. Generate questions from vocabulary if available
   if (lessonContent.vocabulary) {
-    const lessonVocab = lessonContent.vocabulary;
-    const vocabQuestions = lessonVocab.map(vocabItem => {
+    const vocabQuestions = lessonContent.vocabulary.map(vocabItem => {
       // Create a pool of incorrect options from other vocabulary words
-      let incorrectOptionsPool = lessonVocab
+      const otherWords = lessonContent.vocabulary
         .filter(v => v.word !== vocabItem.word)
         .map(v => v.word);
       
-      // If not enough incorrect options in the lesson, pull from the global pool
-      if (incorrectOptionsPool.length < 3) {
-        const globalDistractors = allVocabularyWords.filter(word => word !== vocabItem.word && !incorrectOptionsPool.includes(word));
-        incorrectOptionsPool.push(...shuffleArray(globalDistractors).slice(0, 3 - incorrectOptionsPool.length));
-      }
-      
-      const incorrectOptions = shuffleArray(incorrectOptionsPool).slice(0, 3);
+      const incorrectOptions = shuffleArray(otherWords).slice(0, 3);
       const options = shuffleArray([vocabItem.word, ...incorrectOptions]);
 
       return {

@@ -8,3 +8,5 @@ export default function ProtectedRoute({ children }) {
 
   return isAuthenticated ? children : <Navigate to="/login" />;
 }
+// c:/Users/BAHZ/ESL Pathway/A/src/components/ProtectedRoute.jsx
+// ProtectedRoute.jsx
