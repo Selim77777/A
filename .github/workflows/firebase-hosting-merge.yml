@@ -6,20 +6,18 @@ on:
   push:
     branches:
       - main
+
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Install root dependencies
-        run: npm ci
-      - name: Install function dependencies
-        run: npm ci --prefix functions
-      - name: Build project
-        run: npm run build
+
+      # 🔄 Switched from `npm ci` to `npm install` for flexibility
+      - run: npm install
+
+      - run: npm run build
+
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
