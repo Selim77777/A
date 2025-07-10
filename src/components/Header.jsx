@@ -57,11 +57,11 @@ const Header = () => {
           {/* User Info */}
           <div className="hidden md:flex items-center space-x-4">
             <div className="text-right">
-              <p className="text-sm font-medium text-gray-900">{user.name}</p>
-              <p className="text-xs text-gray-500">Level {user.level}</p>
+              <p className="text-sm font-medium text-gray-900">{user?.name || 'Guest'}</p>
+              <p className="text-xs text-gray-500">Level {user?.level || '-'}</p>
             </div>
             <div className="h-10 w-10 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-medium">{user.name.charAt(0)}</span>
+              <span className="text-white font-medium">{user?.name ? user.name.charAt(0) : '-'}</span>
             </div>
           </div>
 
@@ -100,11 +100,11 @@ const Header = () => {
             <div className="mt-4 pt-4 border-t border-gray-100">
               <div className="flex items-center space-x-3 px-4">
                 <div className="h-10 w-10 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-medium">{user.name.charAt(0)}</span>
+                  <span className="text-white font-medium">{user?.name ? user.name.charAt(0) : '-'}</span>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                  <p className="text-xs text-gray-500">Level {user.level}</p>
+                  <p className="text-sm font-medium text-gray-900">{user?.name || 'Guest'}</p>
+                  <p className="text-xs text-gray-500">Level {user?.level || '-'}</p>
                 </div>
               </div>
             </div>

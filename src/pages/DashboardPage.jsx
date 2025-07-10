@@ -10,9 +10,13 @@ const DashboardPage = () => {
   const { user } = useUser();
   const loading = useLoading(800);
 
+  if (user === null) {
+    return <p>Loading...</p>;
+  }
+
   // Get the 5 most recently completed, unique lessons
   const getRecentLessons = () => {
-    if (!user.lessonHistory || user.lessonHistory.length === 0) {
+    if (!user?.lessonHistory || user.lessonHistory.length === 0) {
       // Fallback to completedLessonIds if history is empty
       return lessons.filter(l => user.completedLessonIds.includes(l.id)).slice(0, 5);
     }

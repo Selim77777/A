@@ -12,10 +12,27 @@ const Lessons = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const loading = useLoading(1000);
 
+  // Helper function to group lessons by stage
+  const groupLessonsByStage = (lessonsToGroup) => {
+    const stages = {
+      'Beginner': [],
+      'Elementary': [],
+      'Intermediate': [],
+      'Other': [] // For lessons that don't match a specific stage keyword
+    };
+
+    lessonsToGroup.forEach(lesson => {
+      const lowerTitle = lesson.title.toLowerCase();
+      if (lowerTitle.includes('beginner') || lowerTitle.includes('(a1)')) stages['Beginner'].push(lesson);
+      else if (lowerTitle.includes('elementary') || lowerTitle.includes('(a2)')) stages['Elementary'].push(lesson);
+      else if (lowerTitle.includes('intermediate') || lowerTitle.includes('(b1/b2)') || lowerTitle.includes('advanced') || lowerTitle.includes('(b1)') || lowerTitle.includes('(b2)')) stages['Intermediate'].push(lesson);
+      else stages['Other'].push(lesson);
+    });
+    return stages;
+  };
+
   const filteredLessons = useMemo(() => {
-    return lessons
-      .filter(lesson => selectedCategory === 'All' || lesson.category === selectedCategory)
-      .filter(lesson => lesson.title.toLowerCase().includes(searchTerm.toLowerCase()));
+    return lessons.filter(lesson => selectedCategory === 'All' || lesson.category === selectedCategory).filter(lesson => lesson.title.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [lessons, selectedCategory, searchTerm]);
 
   const isLessonCompleted = (lessonId) => {
@@ -23,6 +40,8 @@ const Lessons = () => {
   };
 
   if (loading) {
+    // Keep loading skeleton for now
+    // We might refine this later if needed for stage-specific loading
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
@@ -32,6 +51,8 @@ const Lessons = () => {
       </div>
     );
   }
+
+  const groupedLessons = groupLessonsByStage(filteredLessons);
 
   return (
     <div className="space-y-8">
@@ -89,18 +110,29 @@ const Lessons = () => {
         </div>
       </motion.div>
 
-      {/* Lessons Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredLessons.length > 0 ? (
-          filteredLessons.map((lesson, index) => (
-            <LessonCard
-              key={lesson.id}
-              lesson={lesson}
-              isCompleted={isLessonCompleted(lesson.id)}
-              index={index}
-            />
-          ))
-        ) : (
+      {/* Grouped Lessons */}
+      {Object.entries(groupedLessons).map(([stage, lessonsInStage]) => {
+        if (lessonsInStage.length === 0) return null; // Don't render stage heading if no lessons
+
+        return (
+          <div key={stage} className="space-y-4">
+            <h2 className="text-2xl font-bold text-gray-800 mt-6">{stage} Lessons</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {lessonsInStage.map((lesson, index) => (
+                <LessonCard
+                  key={lesson.id}
+                  lesson={lesson}
+                  isCompleted={isLessonCompleted(lesson.id)}
+                  index={index}
+                />
+              ))}
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Handle case where no lessons are found after filtering/grouping */}
+      {filteredLessons.length === 0 && (
           <div className="col-span-full text-center py-16">
             <h3 className="text-xl font-semibold text-gray-800">No lessons found</h3>
             <p className="text-gray-500 mt-2">Try adjusting your search or filter criteria.</p>

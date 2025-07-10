@@ -1,8 +1,8 @@
 export const categories = [
-  { name: 'Grammar', icon: '📚', color: 'bg-blue-500', count: 2 },
-  { name: 'Vocabulary', icon: '📝', color: 'bg-green-500', count: 1 },
-  { name: 'Reading', icon: '📖', color: 'bg-red-500', count: 1 },
-  { name: 'Listening', icon: '👂', color: 'bg-purple-500', count: 1 },
+  { name: 'Grammar', icon: '📚', color: 'bg-blue-500', count: 6 },
+  { name: 'Vocabulary', icon: '📝', color: 'bg-green-500', count: 4 },
+  { name: 'Reading', icon: '📖', color: 'bg-red-500', count: 3 },
+  { name: 'Listening', icon: '👂', color: 'bg-purple-500', count: 3 },
   { name: 'Speaking', icon: '🗣️', color: 'bg-orange-500', count: 0 },
 ];
 
@@ -168,6 +168,193 @@ export const lessons = [
         { word: 'forecast', pronunciation: '/ˈfɔːrkæst/', meaning: 'A prediction of what the weather will be like.' },
         { word: 'temperature', pronunciation: '/ˈtemprətʃər/', meaning: 'The degree of heat or cold.' },
         { word: 'precipitation', pronunciation: '/prɪˌsɪpɪˈteɪʃn/', meaning: 'Rain, snow, sleet, or hail that falls to the ground.' }
+      ]
+    }
+  },
+  {
+    id: 6,
+    title: 'Beginner Grammar: To be, Present Simple/Continuous',
+    description: 'Learn the fundamental grammar points for beginners: the verb "to be", Present Simple, and Present Continuous.',
+    level: 'Beginner',
+    category: 'Grammar',
+    duration: '30 min',
+    completed: false,
+    score: null,
+    objectives: [
+      'Understand and use the verb "to be" in different forms.',
+      'Differentiate and use Present Simple and Present Continuous.',
+      'Form basic sentences with these tenses.'
+    ],
+    content: {
+      rules: [
+        'To be: I am, You/We/They are, He/She/It is.',
+        'Present Simple: for habits, routines, facts (I play, She plays).',
+        'Present Continuous: for actions happening now (I am playing, She is playing).'
+      ],
+      examples: [
+        { positive: 'I am a student.', negative: 'She is not here.', question: 'Are you ready?' },
+        { positive: 'He usually wakes up early.', negative: 'They do not like coffee.', question: 'Does she work here?' },
+        { positive: 'I am reading a book now.', negative: 'He is not watching TV.', question: 'Are you listening?' }
+      ],
+      exercises: [
+        { type: 'fill-in-the-blank', question: 'She ____ (be) happy.', answer: 'is', category: 'grammar' },
+        { type: 'multiple-choice', question: 'We usually ____ (go) to the park on Sundays.', options: ['go', 'goes', 'going'], answer: 'go', category: 'grammar' },
+        { type: 'fill-in-the-blank', question: 'Look! It ____ (rain) outside.', answer: 'is raining', category: 'grammar' }
+      ]
+    }
+  },
+  {
+    id: 7,
+    title: 'Beginner Vocabulary: Introductions and Daily Life',
+    description: 'Learn essential vocabulary for introducing yourself, talking about your family, friends, and daily routines.',
+    level: 'Beginner',
+    category: 'Vocabulary',
+    duration: '20 min',
+    completed: false,
+    score: null,
+    objectives: [
+      'Learn and use vocabulary for personal information.',
+      'Talk about family and friends.',
+      'Describe your daily activities.'
+    ],
+    content: {
+      vocabulary: [
+        { word: 'hello', pronunciation: '/həˈloʊ/', meaning: 'a greeting' },
+        { word: 'goodbye', pronunciation: '/ɡʊdˈbaɪ/', meaning: 'a farewell' },
+        { word: 'name', pronunciation: '/neɪm/', meaning: 'what someone is called' },
+        { word: 'family', pronunciation: '/ˈfæməli/', meaning: 'parents and children' },
+        { word: 'friend', pronunciation: '/frend/', meaning: 'a person you know and like' },
+        { word: 'wake up', pronunciation: '/weɪk ʌp/', meaning: 'stop sleeping' },
+        { word: 'eat breakfast', pronunciation: '/iːt ˈbrekfəst/', meaning: 'have the first meal of the day' },
+        { word: 'go to work/school', pronunciation: '/ɡoʊ tə wɜːrk/skuːl/', meaning: 'travel to your place of work or study' }
+      ],
+      examples: [
+        'Hello, my name is John.',
+        'This is my family.',
+        'I wake up at 7 AM every day.',
+        'She goes to school by bus.'
+      ]
+    }
+  },
+  {
+    id: 8,
+    title: 'Beginner Skills: Basic Communication',
+    description: 'Develop fundamental listening and speaking skills for simple interactions.',
+    level: 'Beginner',
+    category: 'Listening', // Categorizing under Listening as it's a core receptive skill
+    duration: '25 min',
+    completed: false,
+    score: null,
+    objectives: [
+      'Understand simple questions and statements.',
+      'Introduce yourself and ask basic personal questions.',
+      'Recognize key words in simple conversations.'
+    ],
+    content: {
+      dialogues: [{ title: 'Introducing Yourself', conversation: [{ speaker: 'A', text: 'Hi, I\'m [Your Name]. Nice to meet you.' }, { speaker: 'B', text: 'Nice to meet you too. I\'m [Other Person\'s Name].' }] }]
+    }
+  },
+  {
+    id: 9,
+    title: 'Elementary Grammar: Future Forms and Present Perfect',
+    description: 'Explore how to talk about the future using "will" and "be going to", and learn the basic use of the Present Perfect for experiences.',
+    level: 'Elementary',
+    category: 'Grammar',
+    duration: '35 min',
+    completed: false,
+    score: null,
+    objectives: [
+      'Understand and use "will" for future predictions and spontaneous decisions.',
+      'Understand and use "be going to" for future plans and intentions.',
+      'Use the Present Perfect to talk about past experiences.'
+    ],
+    content: {
+      rules: [
+        'Will: for predictions (It will rain tomorrow) and spontaneous decisions (I will help you).',
+        'Be going to: for plans/intentions (I am going to visit my parents) and predictions based on evidence (Look at the clouds, it is going to rain).',
+        'Present Perfect: has/have + past participle (I have visited Paris). Used for experiences or actions with a connection to the present.'
+      ],
+      examples: [
+        { future_will: 'I think she will pass the exam.', future_going_to: 'She is going to study medicine.', present_perfect: 'Have you ever been to London?' },
+        { future_will: 'Okay, I will call you later.', future_going_to: 'They are going to buy a new car next month.', present_perfect: 'I have never eaten sushi.' }
+      ],
+      exercises: [
+        { type: 'fill-in-the-blank', question: 'I ____ (visit) my grandmother tomorrow. (plan)', answer: 'am going to visit', category: 'grammar' },
+        { type: 'multiple-choice', question: 'I\'m tired. I ____ (go) to bed now.', options: ['will go', 'am going to go', 'have gone'], answer: 'will go', category: 'grammar' },
+        { type: 'fill-in-the-blank', question: 'She ____ (finish) her homework yet.', answer: 'has not finished', category: 'grammar' }
+      ]
+    }
+  },
+  {
+    id: 10,
+    title: 'Elementary Vocabulary: Hobbies, Shopping, and Health',
+    description: 'Learn vocabulary related to hobbies, shopping, describing places, and talking about health and feelings.',
+    level: 'Elementary',
+    category: 'Vocabulary',
+    duration: '25 min',
+    completed: false,
+    score: null,
+    objectives: [
+      'Discuss hobbies and free time activities.',
+      'Use vocabulary for shopping and describing places.',
+      'Talk about health and feelings.'
+    ],
+    content: {
+      vocabulary: [
+        { word: 'hobby', pronunciation: '/ˈhɒbi/', meaning: 'an activity done regularly in one\'s leisure time for pleasure.' },
+        { word: 'shopping', pronunciation: '/ˈʃɒpɪŋ/', meaning: 'the activity of buying things in shops.' },
+        { word: 'park', pronunciation: '/pɑːrk/', meaning: 'a large public green area in a town, used for recreation.' },
+        { word: 'cinema', pronunciation: '/ˈsɪnəmə/', meaning: 'a movie theater.' },
+        { word: 'healthy', pronunciation: '/ˈhelθi/', meaning: 'in good physical or mental condition.' },
+        { word: 'happy', pronunciation: '/ˈhæpi/', meaning: 'feeling or showing pleasure.' },
+        { word: 'sad', pronunciation: '/sæd/', meaning: 'feeling or showing sorrow; unhappy.' }
+      ],
+      examples: [
+        'My hobby is reading.',
+        'Let\'s go shopping.',
+        'The park is very big.',
+        'I am feeling healthy today.',
+        'She looks happy.'
+      ]
+    }
+  },
+  {
+    id: 11,
+    title: 'Elementary Skills: Conversations and Descriptions',
+    description: 'Develop your ability to understand short conversations, describe past events, and give simple opinions and directions.',
+    level: 'Elementary',
+    category: 'Reading', // Categorizing under Reading/Listening/Speaking as they are integrated
+    duration: '30 min',
+    completed: false,
+    score: null,
+    objectives: [
+      'Understand the main ideas in short conversations.',
+      'Describe past events using simple past tense.',
+      'Give basic opinions on familiar topics.',
+      'Give and follow simple directions.'
+    ],
+    content: {
+      dialogues: [
+        {
+          title: 'A Weekend Chat',
+          conversation: [
+            { speaker: 'A', text: 'Hi! How was your weekend?' },
+            { speaker: 'B', text: 'It was good! I went to the park with my family.' },
+            { speaker: 'A', text: 'Oh, nice! Did you do anything else?' },
+            { speaker: 'B', text: 'Yes, we watched a movie on Saturday evening.' }
+          ]
+        }
+      ],
+      examples: [
+        'Yesterday, I visited my friend.',
+        'I think this book is interesting.',
+        'Go straight, then turn left at the corner.'
+      ],
+      exercises: [
+        { type: 'comprehension', question: 'What did Person B do on Saturday?', answer: 'Watched a movie', category: 'listening' },
+        { type: 'speaking-prompt', question: 'Tell about your last weekend.', category: 'speaking' },
+        { type: 'writing-prompt', question: 'Write a short paragraph about your favorite hobby.', category: 'writing' },
+        { type: 'multiple-choice', question: 'Which direction do you take to get to the park?', options: ['Turn right', 'Go straight', 'Turn left'], answer: 'Go straight', category: 'reading' } // Assuming a map or dialogue context
       ]
     }
   }
