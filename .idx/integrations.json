@@ -1,0 +1,7 @@
+{
+  "firebase_hosting": {
+    "deploymentHostingUrl": "https://esl-pathway.web.app"
+  },
+  "cloud_run_deploy": {},
+  "gemini_api": {}
+}

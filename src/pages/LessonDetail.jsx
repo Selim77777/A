@@ -98,7 +98,7 @@ const LessonDetail = () => {
 
           <div className="border-t border-gray-200 pt-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center"><Book className="mr-3 h-6 w-6 text-primary-600" /> Lesson Material</h2>
-            <LessonContent content={lesson.content} />
+            <LessonContent content={lesson.content} lessonId={lesson.id} />
           </div>
         </div>
 

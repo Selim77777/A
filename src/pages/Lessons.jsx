@@ -139,7 +139,6 @@ const Lessons = () => {
           </div>
         )}
       </div>
-    </div>
   );
 };
 

@@ -1,8 +1,8 @@
 export const categories = [
   { name: 'Grammar', icon: '📚', color: 'bg-blue-500', count: 6 },
-  { name: 'Vocabulary', icon: '📝', color: 'bg-green-500', count: 4 },
+  { name: 'Vocabulary', icon: '📝', color: 'bg-green-500', count: 6 },
   { name: 'Reading', icon: '📖', color: 'bg-red-500', count: 3 },
-  { name: 'Listening', icon: '👂', color: 'bg-purple-500', count: 3 },
+  { name: 'Listening', icon: '👂', color: 'bg-purple-500', count: 2 },
   { name: 'Speaking', icon: '🗣️', color: 'bg-orange-500', count: 0 },
 ];
 
@@ -357,5 +357,51 @@ export const lessons = [
         { type: 'multiple-choice', question: 'Which direction do you take to get to the park?', options: ['Turn right', 'Go straight', 'Turn left'], answer: 'Go straight', category: 'reading' } // Assuming a map or dialogue context
       ]
     }
+  }
+  ,
+  {
+    id: "lesson-vocab-01",
+    title: "Confusing Word Pairs - Part 1",
+    description: "Learn to distinguish between commonly confused English word pairs through definitions and examples.",
+    level: "Intermediate",
+    category: "Vocabulary",
+    duration: "15 min",
+    objectives: [
+      "Understand the differences between similar-looking English words.",
+      "Use each word correctly in context.",
+      "Reinforce learning through example sentences."
+    ],
+    content: [
+      {
+        type: "vocabList",
+        items: [
+          { word: "advertise", meaning: "to promote a product or service", pronunciation: "/ˈæd.və.taɪz/" },
+          { word: "announce", meaning: "to publicly share important information", pronunciation: "/əˈnaʊns/" },
+          { word: "tabloid", meaning: "a small newspaper with sensational stories", pronunciation: "/ˈtæb.lɔɪd/" },
+          { word: "broadsheet", meaning: "a large, more serious newspaper", pronunciation: "/ˈbrɔːd.ʃiːt/" },
+          { word: "incident", meaning: "a minor or unplanned event", pronunciation: "/ˈɪn.sɪ.dənt/" },
+          { word: "event", meaning: "a planned, important occasion", pronunciation: "/ɪˈvent/" },
+          { word: "win", meaning: "to be victorious in a competition", pronunciation: "/wɪn/" },
+          { word: "beat", meaning: "to defeat an opponent", pronunciation: "/biːt/" },
+          { word: "borrow", meaning: "to take something for a short time", pronunciation: "/ˈbɒr.əʊ/" },
+          { word: "lend", meaning: "to give something temporarily", pronunciation: "/lend/" }
+        ]
+      },
+      {
+        type: "examples",
+        items: [
+          { sentence: "They advertised their product on social media.", translation: "روّجوا منتجهم على وسائل التواصل الاجتماعي." },
+          { sentence: "The company announced a new CEO today.", translation: "أعلنت الشركة عن مدير تنفيذي جديد اليوم." },
+          { sentence: "The tabloid covered the celebrity scandal.", translation: "غطت الصحيفة الشعبية فضيحة المشاهير." },
+          { sentence: "He prefers reading broadsheets for serious news.", translation: "يفضل قراءة الصحف الرسمية للأخبار الجادة." },
+          { sentence: "There was a small incident in the lobby.", translation: "حدثت واقعة صغيرة في البهو." },
+          { sentence: "The opening event starts at 6 PM.", translation: "يبدأ الحدث الافتتاحي في الساعة 6 مساءً." },
+          { sentence: "They won the game!", translation: "لقد فازوا بالمباراة!" },
+          { sentence: "We beat the other team by 3 points.", translation: "هزمنا الفريق الآخر بفارق 3 نقاط." },
+          { sentence: "Can I borrow your pen?", translation: "هل يمكنني استعارة قلمك؟" },
+          { sentence: "I'll lend you some money until payday.", translation: "سأقرضك بعض المال حتى يوم الدفع." }
+        ]
+      }
+    ]
   }
 ];

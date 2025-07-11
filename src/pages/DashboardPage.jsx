@@ -144,7 +144,7 @@ const DashboardPage = () => {
           </div>
           <div className="space-y-5">
             {skills.map(skill => (
-              <div key={skill.name}>
+              <div key={skill.name} className="cursor-pointer hover:bg-gray-100 rounded-md p-2 -mx-2 transition-colors duration-200">
                 <div className="flex justify-between items-center mb-1">
                   <span className="font-medium text-gray-700">{skill.name}</span>
                   <span className="text-sm font-semibold text-gray-600">{skill.progress}%</span>
