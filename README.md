@@ -1,4 +1,4 @@
-[![Netlify Status](https://api.netlify.com/api/v1/badges/d769c4a8-593e-44c7-a5a0-10ac2f781f1f/deploy-status)](https://app.netlify.com/sites/eslpathway/deploys)
+[![Deploy to Firebase](https://github.com/BAHZ/ESL-Pathway-A/actions/workflows/firebase-hosting-merge.yml/badge.svg)](https://github.com/BAHZ/ESL-Pathway-A/actions/workflows/firebase-hosting-merge.yml)
 # esl-master-app
 
 This is a modern web application built with React and Vite.
@@ -41,3 +41,6 @@ Runs ESLint to find and fix problems in your JavaScript code.
 ### `npm run preview`
 
 Serves the production build locally to preview it before deployment.
+
+<!-- This is a test for preview deploy -->
+
