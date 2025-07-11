@@ -167,7 +167,7 @@ const LessonContent = ({ content }) => {
                   <p className="text-red-800">Unknown content type: {item.type}</p>
                 </div>
               );
-          */}
+          */} 
  </React.Fragment>
       ))}
       {!Array.isArray(content) && (
@@ -176,39 +176,4 @@ const LessonContent = ({ content }) => {
     </div>
   );
 };
-
-export default LessonContent;
-          )}
-
-          {/* Render IELTS Preparation - Assuming ieltsPrep content is structured with 'data' property */}
-          {item.type === 'ieltsPrep' && item.data && (
- <div className="bg-purple-50 p-6 rounded-lg shadow-sm border-l-4 border-purple-400">
- {item.title && <h3 className="text-2xl font-semibold text-gray-800 mb-4">{item.title}</h3>}
- {!item.title && <h3 className="text-2xl font-semibold text-gray-800 mb-4">IELTS Preparation</h3>} {/* Default title */}
- <p className="text-gray-700">{item.data}</p>
- </div>
-          )}
-
-          {/* Render Recommended Resources - Assuming resources content is structured with 'items' array */}
-          {item.type === 'resources' && Array.isArray(item.items) && item.items.length > 0 && (
- <div className="bg-green-50 p-6 rounded-lg shadow-sm border-l-4 border-green-400">
- {item.title && <h3 className="text-2xl font-semibold text-gray-800 mb-4">{item.title}</h3>}
- {!item.title && <h3 className="text-2xl font-semibold text-gray-800 mb-4">Recommended Resources</h3>} {/* Default title */}
- <ul className="list-disc list-inside space-y-3 text-gray-700">
-                    {item.items.map((resource, resourceIndex) => (
- <li key={resourceIndex}>
- <a
- href={resource.url}
- target="_blank"
- rel="noopener noreferrer"
- className="text-blue-600 hover:underline"
- >
-                          {resource.name || resource.label || resource.url} {/* Use name, label, or url for link text */}
- </a>
- </li>
- ))}\n </ul>\n </div>\n          )}\n\n          {/* Add cases for other content types if they appear */}\n          {/*\n            default:\n              return (\n                <div key={index} className=\"bg-red-100 p-4 rounded-md\">\n                  <p className=\"text-red-800\">Unknown content type: {item.type}</p>\n                </div>\n              );\n          */}\n );
-      })}\n      {!Array.isArray(content) && (\n        <p className=\"text-red-500\">Error: Lesson content is not in the expected array format.</p>\n      )}\n    </div>
-  );
-};
-
 export default LessonContent;

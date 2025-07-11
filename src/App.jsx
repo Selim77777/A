@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react'; // Import Suspense
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
-import RootLayout from '/src/components/RootLayout'; // Use absolute path
+import RootLayout from '@/components/RootLayout'; // Use @ alias
 
 import ProtectedRoute from '@/components/ProtectedRoute'; // Use @ alias
 
@@ -27,7 +27,7 @@ const router = createBrowserRouter([
       // Public routes that use the RootLayout
       {
         path: "login",
-        element: <Suspense fallback={<div>Loading...</div>}><LoginPage /></Suspense>,
+        element: <Suspense fallback={<div>Loading...</div>}><LoginPage /></Suspense>
       },
       {
         path: "signup",
@@ -58,4 +58,3 @@ function App() {
 }
 
 export default App;
-// Import the functions you need from the SDKs you need
